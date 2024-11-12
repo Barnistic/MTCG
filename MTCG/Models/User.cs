@@ -28,17 +28,39 @@ namespace MTCG.Models
             Stack.Add(card);
         }
 
+        public void AddMultipleCards(List<Card> cards)
+        {
+            Stack.AddRange(cards);
+        }
+
         public void RemoveCard(Card card)
         {
             Stack.Remove(card);
         }
 
-        public static void Register(string username, string password)
+        public void PrintCardStack()
+        {
+            foreach (Card card in Stack)
+            {
+                Console.WriteLine(card);
+            }
+        }
+
+        public void PrintCardDeck()
+        {
+            foreach (Card card in Deck)
+            {
+                Console.WriteLine(card);
+            }
+        }
+
+        public static User Register(string username, string password)
         {
             // Check if user already exists in the database, handle errors
             // Add user to the database
             User newUser = new(username, password);
             Console.WriteLine(newUser);
+            return newUser;
         }
 
         public override string ToString()

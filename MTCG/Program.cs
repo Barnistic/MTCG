@@ -1,4 +1,5 @@
 ﻿using MTCG.Models;
+using MTCG.Services;
 
 namespace MTCG
 {
@@ -6,10 +7,11 @@ namespace MTCG
     {
         static void Main(string[] args)
         {
-            User.Register("TestName", "Testpass");
+            User newUser = User.Register("TestName", "Testpass");
 
-            Card newCard = Card.CreateRandomCard();
-            Console.WriteLine(newCard);
+            PackageService.BuyPackage(newUser);
+
+            newUser.PrintCardStack();
         }
     }
 }

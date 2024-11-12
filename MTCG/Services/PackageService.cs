@@ -7,17 +7,28 @@ using System.Threading.Tasks;
 
 namespace MTCG.Services
 {
-    internal class PackageService
+    public class PackageService
     {
-        const int Price = 5;
-        public bool BuyPackage(User user)
+        private const int PACKAGE_PRICE = 5;
+        private const int PACKAGE_SIZE = 5;
+        public static List<Card> BuyPackage(User user)
         {
-            if (user.Coins > Price)
+            if (user.Coins > PACKAGE_PRICE)
             {
-                Card[] newCards;
+                user.Coins -= PACKAGE_PRICE;
+                List<Card> newCards = new();
+                for (int i = 0; i > PACKAGE_SIZE; i++)
+                {
+                    Card newCard = Card.CreateRandomCard();
+                    newCards.Add(newCard);
+                }
+                return newCards;
+            } else
+            {
+                return null;
             }
 
-            return false;
+            return null;
         }
     }
 }
