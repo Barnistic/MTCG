@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
-    internal class MonsterCard : Card
+    internal class SpellCard : Card
     {
-        public MonsterCard(string name, int damage, CardType type) : base(name, damage, type)
+        public SpellCard(string name, int damage, CardType type) : base(name, damage, type)
         {
+            
         }
     }
 }

@@ -6,10 +6,10 @@ namespace MTCG
     {
         static void Main(string[] args)
         {
-            User testUser = new User("testName", "testPassword");
-            Console.WriteLine(testUser);
-            MonsterCard testMonsterCard = new MonsterCard("testMonsterCardName", "testMonsterCardType");
-            Console.WriteLine(testMonsterCard);
+            User.Register("TestName", "Testpass");
+
+            Card newCard = Card.CreateRandomCard();
+            Console.WriteLine(newCard);
         }
     }
 }

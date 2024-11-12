@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
-    internal class MonsterCard : Card
+    internal class Deck
     {
-        public MonsterCard(string name, int damage, CardType type) : base(name, damage, type)
-        {
-        }
     }
 }
