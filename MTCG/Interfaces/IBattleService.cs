@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MTCG.Interfaces
 {
-    internal interface IBattleService
+    public interface IBattleService
     {
     }
 }
