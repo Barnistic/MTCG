@@ -8,7 +8,7 @@ namespace MTCG.Models
 {
     internal class SpellCard : Card
     {
-        public SpellCard(string name, int damage, CardType type) : base(name, damage, type)
+        public SpellCard(string name, int damage, string type) : base(name, damage, type)
         {
             
         }

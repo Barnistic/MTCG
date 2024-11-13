@@ -7,11 +7,22 @@ namespace MTCG
     {
         static void Main(string[] args)
         {
-            User newUser = User.Register("TestName", "Testpass");
+            //Services
+            UserService userService = new();
+            CardService cardService = new();
 
-            PackageService.BuyPackage(newUser);
+            User newUser = userService.Register("TestName", "Testpass");
 
-            newUser.PrintCardStack();
+            try
+            {
+                cardService.AddCard(newUser, PackageService.BuyPackage(newUser));
+            } catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
+
+            cardService.PrintCardStack(newUser);
         }
     }
 }

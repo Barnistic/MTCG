@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
-    internal class User
+    public class User
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public int ELO { get; set; } = 500;
-        public int Coins { get; set; } = 20;
+        public string Username { get; private set; }
+        public string Password { get; private set; }
+        public int ELO { get; private set; } = 500;
+        public int Coins { get; set; } = 4;
 
         public List<Card> Deck { get; set; } = [];
         public List<Card> Stack { get; set; } = [];
@@ -21,46 +21,6 @@ namespace MTCG.Models
         {
             Username = username;
             Password = password;
-        }
-
-        public void AddCard(Card card)
-        {
-            Stack.Add(card);
-        }
-
-        public void AddMultipleCards(List<Card> cards)
-        {
-            Stack.AddRange(cards);
-        }
-
-        public void RemoveCard(Card card)
-        {
-            Stack.Remove(card);
-        }
-
-        public void PrintCardStack()
-        {
-            foreach (Card card in Stack)
-            {
-                Console.WriteLine(card);
-            }
-        }
-
-        public void PrintCardDeck()
-        {
-            foreach (Card card in Deck)
-            {
-                Console.WriteLine(card);
-            }
-        }
-
-        public static User Register(string username, string password)
-        {
-            // Check if user already exists in the database, handle errors
-            // Add user to the database
-            User newUser = new(username, password);
-            Console.WriteLine(newUser);
-            return newUser;
         }
 
         public override string ToString()

@@ -6,20 +6,13 @@ using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
-    enum CardType
-    {
-        WATER,
-        FIRE,
-        EARTH,
-        AIR
-    }
-    internal abstract class Card
+    public abstract class Card
     {
         public Guid Id = new();
         public string Name { get; set; }
         public int Damage { get; set; }
-        public CardType Type { get; set; }
-        public Card(string cardName, int cardDamage, CardType cardType)
+        public string Type { get; set; }
+        public Card(string cardName, int cardDamage, string cardType)
         {
             Name = cardName;
             Damage = cardDamage;
@@ -30,21 +23,18 @@ namespace MTCG.Models
 
         public static Card CreateRandomCard()
         {
-            int randomDamage = random.Next(3, 7);
-            CardType randomType = (CardType)random.Next(4);
-
             if (random.Next(2) == 0)
             {
-                return new MonsterCard("MonsterCard1", randomDamage, randomType);
+                return new MonsterCard("MonsterCard1", 5, "Water");
             } else
             {
-                return new SpellCard("SpellCard1", randomDamage, randomType);
+                return new SpellCard("SpellCard1", 3, "Fire");
             }
         }
 
         public override string ToString()
         {
-            return $"CardName: {Name}, CardDamage: {Damage}, CardType: {Type.ToString()}";
+            return $"CardName: {Name}, CardDamage: {Damage}, CardType: {Type}";
         }
     }
 }
