@@ -11,6 +11,7 @@ namespace MTCG.Interfaces
     {
         User Register();
         User Login();
-        //private bool Authenticate(string username, string password);
+        void Win(User user);
+        void Lose(User user);
     }
 }

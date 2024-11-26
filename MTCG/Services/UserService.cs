@@ -54,6 +54,9 @@ namespace MTCG.Services
             return newUser;
         }
 
+        public void Win(User user) { user.ELO += 3; }
+        public void Lose(User user) { user.ELO -= 5; }
+
         private bool Authenticate(string username, string password)
         {
             if (username == AdminName && password == AdminPassword) return true;

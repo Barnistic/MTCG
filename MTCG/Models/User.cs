@@ -11,7 +11,7 @@ namespace MTCG.Models
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Username { get; private set; }
         public string Password { get; private set; }
-        public int ELO { get; private set; } = 500;
+        public int ELO { get; set; } = 100;
         public int Coins { get; set; } = 4;
 
         public List<Card> Deck { get; set; } = new();

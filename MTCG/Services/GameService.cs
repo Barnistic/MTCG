@@ -12,6 +12,7 @@ namespace MTCG.Services
     {
         IUserService userService = new UserService();
         ICardService cardService = new CardService();
+        IBattleService battleService = new BattleService();
 
         User LoggedInUser;
         bool gameOver = false;
@@ -38,13 +39,11 @@ namespace MTCG.Services
                         break;
                 }
                 Console.WriteLine(LoggedInUser);
-                cardService.PrintCardStack(LoggedInUser);
                 break;
             }
 
             while (!gameOver)
             {
-                Console.Clear();
                 Console.WriteLine("Logged in user: " + LoggedInUser.Username);
                 Console.WriteLine("Choose an option: Battle(1), Manage stack(2), Trade(3), Shop(4), Exit(5)");
 
@@ -53,7 +52,8 @@ namespace MTCG.Services
                 switch (choice)
                 {
                     case "1":
-                        Console.WriteLine("Battle");
+                        battleService.Battle(LoggedInUser);
+                        battleService.ProcessResult(LoggedInUser);
                         break;
                     case "2":
                         ManageStack(LoggedInUser);
