@@ -9,11 +9,12 @@ namespace MTCG.Models
     public class User
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string Username { get; private set; }
-        public string Password { get; private set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
         public int ELO { get; set; } = 100;
-        public int Coins { get; set; } = 4;
+        public int Coins { get; set; } = 20;
 
+        //The deck will be the first 5 card of the Stack
         public List<Card> Deck { get; set; } = new();
         public List<Card> Stack { get; set; } = new();
 
@@ -21,13 +22,9 @@ namespace MTCG.Models
         {
             Username = username;
             Password = password;
-            Coins = 20;
         }
 
-        public User()
-        {
-            Coins = 20;
-        }
+        public User() { }
         public override string ToString()
         {
             return $"{Username}, {Password}";
