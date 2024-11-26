@@ -12,6 +12,8 @@ namespace MTCG.Models
         public string Name { get; set; }
         public int Damage { get; set; }
         public string Type { get; set; }
+
+        protected static readonly string[] Elements = { "Water", "Normal", "Fire" };
         public Card(string cardName, int cardDamage, string cardType)
         {
             Name = cardName;
@@ -23,12 +25,14 @@ namespace MTCG.Models
 
         public static Card CreateRandomCard()
         {
+            string randomElement = Elements[random.Next(Elements.Length)];
+            int randomStrength = random.Next(2, 6);
             if (random.Next(2) == 0)
             {
-                return new MonsterCard("MonsterCard1", 5, "Water");
+                return new MonsterCard(randomElement + " " + randomStrength, randomStrength, randomElement);
             } else
             {
-                return new SpellCard("SpellCard1", 3, "Fire");
+                return new SpellCard(randomElement + " " + randomStrength, randomStrength, randomElement);
             }
         }
 

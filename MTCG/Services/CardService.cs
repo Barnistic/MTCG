@@ -22,16 +22,38 @@ namespace MTCG.Services
             user.Stack.AddRange(cards);
         }
 
-        public void RemoveCard(User user, Card card)
+        public void AddRandomCard(int amount, User user)
         {
-            user.Stack.Remove(card);
+            for (int i = 0; i < amount; i++)
+            {
+                user.Stack.Add(Card.CreateRandomCard());
+            }
+        }
+
+        public void RemoveCard(User user, int selection)
+        {
+            user.Stack.Remove(user.Stack[selection]);
+        }
+
+        public void MoveCard(User user, int i, int j)
+        {
+            Card temp = user.Stack[i];
+            user.Stack[i] = user.Stack[j];
+            user.Stack[j] = temp;
+        }
+
+        public void UpdateDeck(User user)
+        {
+            user.Deck = user.Stack.Take(5).ToList();
         }
 
         public void PrintCardStack(User user)
         {
+            int i = 1;
             foreach (Card card in user.Stack)
             {
-                Console.WriteLine(card);
+                Console.WriteLine(i + ": " + card);
+                i++;
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using MTCG.Models;
 using MTCG.Services;
+using MTCG.Interfaces;
 
 namespace MTCG
 {
@@ -7,22 +8,10 @@ namespace MTCG
     {
         static void Main(string[] args)
         {
-            //Services
-            UserService userService = new();
-            CardService cardService = new();
 
-            User newUser = userService.Register("TestName", "Testpass");
+            GameService Game = new();
 
-            try
-            {
-                cardService.AddCard(newUser, PackageService.BuyPackage(newUser));
-            } catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            
-
-            cardService.PrintCardStack(newUser);
+            Game.StartGame();
         }
     }
 }

@@ -9,6 +9,8 @@ namespace MTCG.Interfaces
 {
     public interface IUserService
     {
-        User Register(string username, string password);
+        User Register();
+        User Login();
+        //private bool Authenticate(string username, string password);
     }
 }

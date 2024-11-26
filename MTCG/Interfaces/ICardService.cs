@@ -11,7 +11,10 @@ namespace MTCG.Interfaces
     {
         void AddCard(User user, Card card);
         void AddCard(User user, List<Card> cards);
-        void RemoveCard(User user, Card card);
+        void AddRandomCard(int amount, User user);
+        void RemoveCard(User user, int selection);
+        void MoveCard(User user, int i, int j);
+        void UpdateDeck(User user);
         void PrintCardStack(User user);
         void PrintCardDeck(User user);
     }

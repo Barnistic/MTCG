@@ -11,11 +11,13 @@ namespace MTCG.Services
     {
         private const int PACKAGE_PRICE = 5;
         private const int PACKAGE_SIZE = 5;
-        public static List<Card> BuyPackage(User user)
+        public static bool BuyPackage(User user)
         {
+            CardService cardService = new();
             if (user.Coins < PACKAGE_PRICE)
             {
-                throw new InvalidOperationException("You do not have enough coins to buy this package.");
+                Console.WriteLine("Not enough coins!");
+                return false;
             }
 
             user.Coins -= PACKAGE_PRICE;
@@ -24,10 +26,12 @@ namespace MTCG.Services
 
             for (int i = 0; i < PACKAGE_SIZE; i++)
             {
-                newCards.Add(Card.CreateRandomCard());
+               newCards.Add(Card.CreateRandomCard());
             }
 
-            return newCards;
+            cardService.AddCard(user, newCards);
+
+            return true;
         }
     }
 }
