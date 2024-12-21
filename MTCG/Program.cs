@@ -11,8 +11,9 @@ namespace MTCG
 
             GameService Game = new();
             Server server = new(10001);
-            server.Start();
-            //Game.StartGame();
+            //server.Start();
+            Game.StartGame();
+
         }
     }
 }

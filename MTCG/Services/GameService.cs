@@ -13,8 +13,9 @@ namespace MTCG.Services
         IUserService userService = new UserService();
         ICardService cardService = new CardService();
         IBattleService battleService = new BattleService();
+        ITradingService tradingService = new TradingService();
 
-        User LoggedInUser;
+        private User? LoggedInUser;
         bool gameOver = false;
         public void StartGame()
         {
@@ -22,7 +23,7 @@ namespace MTCG.Services
             {
                 Console.WriteLine("Choose an option: Register(1), Login(2)");
 
-                string choice = Console.ReadLine();
+                string? choice = Console.ReadLine();
 
                 switch(choice)
                 {
@@ -47,7 +48,7 @@ namespace MTCG.Services
                 Console.WriteLine("Logged in user: " + LoggedInUser.Username);
                 Console.WriteLine("Choose an option: Battle(1), Manage stack(2), Trade(3), Shop(4), Exit(5)");
 
-                string choice = Console.ReadLine();
+                string? choice = Console.ReadLine();
 
                 switch (choice)
                 {
@@ -59,7 +60,10 @@ namespace MTCG.Services
                         ManageStack(LoggedInUser);
                         break;
                     case "3":
-                        Console.WriteLine("Trade");
+                        tradingService.AddListing(Card.CreateRandomCard(), "Monster", 10, "");
+                        tradingService.AddListing(Card.CreateRandomCard(), "Spell", 7, "Water");
+                        tradingService.AddListing(Card.CreateRandomCard(), "Monster", 2, "Fire");
+                        tradingService.PrintMarket();
                         break;
                     case "4":
                         Shop(LoggedInUser);
@@ -78,7 +82,7 @@ namespace MTCG.Services
             {
                 Console.WriteLine("Choose an option: Show stack(1), Show deck(2), Remove a card(3), Move cards(4), Exit(5)");
 
-                string choice = Console.ReadLine();
+                string? choice = Console.ReadLine();
                 switch (choice)
                 {
                     case "1":
@@ -118,6 +122,28 @@ namespace MTCG.Services
             while (!exit)
             {
                 Console.WriteLine("Choose an option: Buy a package - 5 coins(1), Exit(2)");
+
+                string choice = Console.ReadLine();
+                switch (choice)
+                {
+                    case "1":
+                        PackageService.BuyPackage(user);
+                        cardService.UpdateDeck(user);
+                        break;
+                    case "2":
+                        exit = true;
+                        break;
+                }
+            }
+        }
+
+        public void Trade(User user)
+        {
+            bool exit = false;
+
+            while (!exit)
+            {
+                Console.WriteLine("Choose an option: Accept a trade(1), Add a listing(2),  Exit(2)");
 
                 string choice = Console.ReadLine();
                 switch (choice)
