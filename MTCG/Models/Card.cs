@@ -26,7 +26,7 @@ namespace MTCG.Models
         public static Card CreateRandomCard()
         {
             string randomElement = Elements[random.Next(Elements.Length)];
-            int randomStrength = random.Next(2, 6);
+            int randomStrength = random.Next(4, 16);
             if (random.Next(2) == 0)
             {
                 return new MonsterCard(randomElement + " " + randomStrength, randomStrength, randomElement);
@@ -34,11 +34,6 @@ namespace MTCG.Models
             {
                 return new SpellCard(randomElement + " " + randomStrength, randomStrength, randomElement);
             }
-        }
-
-        public override string ToString()
-        {
-            return $"CardName: {Name}, CardDamage: {Damage}, CardType: {Type}";
         }
     }
 }

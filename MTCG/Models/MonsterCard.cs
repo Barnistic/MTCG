@@ -11,5 +11,10 @@ namespace MTCG.Models
         public MonsterCard(string name, int damage, string type) : base(name, damage, type)
         {
         }
+
+        public override string ToString()
+        {
+            return $"CardName: Monster {Name}, CardDamage: {Damage}, CardType: {Type}";
+        }
     }
 }

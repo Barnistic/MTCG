@@ -19,7 +19,12 @@ namespace MTCG.Services
         bool gameOver = false;
         public void StartGame()
         {
-            while(true)
+            //For testing purposes
+            tradingService.AddListing(Card.CreateRandomCard(), "Monster", 10, "");
+            tradingService.AddListing(Card.CreateRandomCard(), "Spell", 7, "Water");
+            tradingService.AddListing(Card.CreateRandomCard(), "Monster", 2, "Fire");
+
+            while (true)
             {
                 Console.WriteLine("Choose an option: Register(1), Login(2)");
 
@@ -45,6 +50,7 @@ namespace MTCG.Services
 
             while (!gameOver)
             {
+                Console.Clear();
                 Console.WriteLine("Logged in user: " + LoggedInUser.Username);
                 Console.WriteLine("Choose an option: Battle(1), Manage stack(2), Trade(3), Shop(4), Exit(5)");
 
@@ -60,10 +66,8 @@ namespace MTCG.Services
                         ManageStack(LoggedInUser);
                         break;
                     case "3":
-                        tradingService.AddListing(Card.CreateRandomCard(), "Monster", 10, "");
-                        tradingService.AddListing(Card.CreateRandomCard(), "Spell", 7, "Water");
-                        tradingService.AddListing(Card.CreateRandomCard(), "Monster", 2, "Fire");
                         tradingService.PrintMarket();
+                        Trade(LoggedInUser);
                         break;
                     case "4":
                         Shop(LoggedInUser);
@@ -80,7 +84,7 @@ namespace MTCG.Services
 
             while (!exit)
             {
-                Console.WriteLine("Choose an option: Show stack(1), Show deck(2), Remove a card(3), Move cards(4), Exit(5)");
+                Console.WriteLine("Choose an option: Show stack(1), Show deck(2), Remove a card(3), Move cards(4), Back(5)");
 
                 string? choice = Console.ReadLine();
                 switch (choice)
@@ -121,7 +125,7 @@ namespace MTCG.Services
 
             while (!exit)
             {
-                Console.WriteLine("Choose an option: Buy a package - 5 coins(1), Exit(2)");
+                Console.WriteLine("Choose an option: Buy a package - 5 coins(1), Back(2)");
 
                 string choice = Console.ReadLine();
                 switch (choice)
@@ -143,16 +147,38 @@ namespace MTCG.Services
 
             while (!exit)
             {
-                Console.WriteLine("Choose an option: Accept a trade(1), Add a listing(2),  Exit(2)");
+                Console.WriteLine("Choose an option: Accept a trade(1), Add a listing(2),  Back(3)");
 
                 string choice = Console.ReadLine();
                 switch (choice)
                 {
                     case "1":
-                        PackageService.BuyPackage(user);
-                        cardService.UpdateDeck(user);
+                        Console.WriteLine("Choose which trade to accept! (1-" + tradingService.GetMarketCount() + ")");
+                        int tradeNumber = Int32.Parse(Console.ReadLine());
+                        if (tradeNumber < 1 || tradeNumber > tradingService.GetMarketCount())
+                        {
+                            Console.WriteLine("Choose a number between 1-" + tradingService.GetMarketCount());
+                            continue;
+                        } 
+                        else
+                        {
+                            cardService.PrintCardStack(LoggedInUser);
+                            Console.WriteLine("Pick which card to trade from your stack!");
+                            int stackNumber = Int32.Parse(Console.ReadLine());
+                            if (tradingService.AcceptTrade(LoggedInUser.Stack[stackNumber - 1], tradingService.GetListing(tradeNumber - 1))) 
+                            {
+                                cardService.RemoveCard(LoggedInUser, stackNumber - 1);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Card doesn't match requested specifications!");
+                                continue;
+                            }
+                        }
                         break;
                     case "2":
+                        break;
+                    case "3":
                         exit = true;
                         break;
                 }

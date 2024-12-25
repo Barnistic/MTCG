@@ -9,7 +9,7 @@ using System.Transactions;
 
 namespace MTCG.Services
 {
-    internal class TradingService : ITradingService
+    public class TradingService : ITradingService
     {
         
 
@@ -52,6 +52,16 @@ namespace MTCG.Services
                 }
                 i++;
             }
+        }
+
+        public TradeEntry GetListing(int i)
+        {
+            return Market[i];
+        }
+
+        public int GetMarketCount()
+        {
+            return Market?.Count ?? 0;
         }
     }
 }
