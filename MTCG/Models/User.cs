@@ -27,7 +27,7 @@ namespace MTCG.Models
         public User() { }
         public override string ToString()
         {
-            return $"{Username}, {Password}";
+            return $"{Username}";
         }
     }
 }

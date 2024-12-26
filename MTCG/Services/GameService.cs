@@ -16,13 +16,17 @@ namespace MTCG.Services
         ITradingService tradingService = new TradingService();
 
         private User? LoggedInUser;
+        private User testUser = new("testUser", "password"); //For testing
         bool gameOver = false;
         public void StartGame()
         {
             //For testing purposes
-            tradingService.AddListing(Card.CreateRandomCard(), "Monster", 10, "");
-            tradingService.AddListing(Card.CreateRandomCard(), "Spell", 7, "Water");
-            tradingService.AddListing(Card.CreateRandomCard(), "Monster", 2, "Fire");
+            cardService.AddRandomCard(10, testUser);
+            cardService.UpdateDeck(testUser);
+
+            tradingService.AddListing(testUser, Card.CreateRandomCard(), "Monster", 10, "");
+            tradingService.AddListing(testUser, Card.CreateRandomCard(), "Spell", 7, "Water");
+            tradingService.AddListing(testUser, Card.CreateRandomCard(), "Monster", 2, "Fire");
 
             while (true)
             {
@@ -50,7 +54,7 @@ namespace MTCG.Services
 
             while (!gameOver)
             {
-                Console.Clear();
+                //Console.Clear();
                 Console.WriteLine("Logged in user: " + LoggedInUser.Username);
                 Console.WriteLine("Choose an option: Battle(1), Manage stack(2), Trade(3), Shop(4), Exit(5)");
 
@@ -147,42 +151,128 @@ namespace MTCG.Services
 
             while (!exit)
             {
-                Console.WriteLine("Choose an option: Accept a trade(1), Add a listing(2),  Back(3)");
+                Console.WriteLine("Choose an option: Print market(1), Accept a trade(2), Add a listing(3),  Back(4)");
 
                 string choice = Console.ReadLine();
                 switch (choice)
                 {
+                    //Print market
                     case "1":
-                        Console.WriteLine("Choose which trade to accept! (1-" + tradingService.GetMarketCount() + ")");
-                        int tradeNumber = Int32.Parse(Console.ReadLine());
-                        if (tradeNumber < 1 || tradeNumber > tradingService.GetMarketCount())
-                        {
-                            Console.WriteLine("Choose a number between 1-" + tradingService.GetMarketCount());
-                            continue;
-                        } 
-                        else
-                        {
-                            cardService.PrintCardStack(LoggedInUser);
-                            Console.WriteLine("Pick which card to trade from your stack!");
-                            int stackNumber = Int32.Parse(Console.ReadLine());
-                            if (tradingService.AcceptTrade(LoggedInUser.Stack[stackNumber - 1], tradingService.GetListing(tradeNumber - 1))) 
-                            {
-                                cardService.RemoveCard(LoggedInUser, stackNumber - 1);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Card doesn't match requested specifications!");
-                                continue;
-                            }
-                        }
+                        tradingService.PrintMarket();
                         break;
+                    //Accept a trade
                     case "2":
+                        AcceptTrade();
                         break;
+                    //Add a listing
                     case "3":
+                        CreateListing();
+                        break;
+                    case "4":
                         exit = true;
                         break;
                 }
             }
+        }
+
+        private void AcceptTrade()
+        {
+            Console.WriteLine($"Choose which trade to accept! (1-{tradingService.GetMarketCount()})");
+            int tradeNumber = Int32.Parse(Console.ReadLine());
+            if (tradeNumber < 1 || tradeNumber > tradingService.GetMarketCount())
+            {
+                Console.WriteLine($"Choose a number between 1-{tradingService.GetMarketCount()}");
+                return;
+            }
+            else
+            {
+                cardService.PrintCardStack(LoggedInUser);
+                Console.WriteLine("Pick which card to trade from your stack!");
+
+                int stackNumber = Int32.Parse(Console.ReadLine());
+                TradeEntry selectedListing = tradingService.GetListing(tradeNumber - 1);
+
+                bool isTradeValid = tradingService.ValidateTrade(LoggedInUser.Stack[stackNumber - 1], selectedListing);
+                Console.WriteLine("DEBUG: Selected card from stack: " + LoggedInUser.Stack[stackNumber - 1] + ", Listing: " + tradingService.GetListing(tradeNumber - 1));
+
+                if (isTradeValid)
+                {
+                    cardService.AddCard(selectedListing.owner, LoggedInUser.Stack[stackNumber - 1]); //Add requested card to the trade's owner
+                    cardService.AddCard(LoggedInUser, selectedListing.card); //Add traded card to the user's deck
+                    cardService.RemoveCard(LoggedInUser, stackNumber - 1); //Remove selected card from the stack
+                    tradingService.RemoveListing(selectedListing); //Remove listing from the market
+                    Console.WriteLine("Successfull trade!");
+                }
+                else
+                {
+                    Console.WriteLine("Card doesn't match requested specifications!");
+                    return;
+                }
+            }
+        }
+
+        private void CreateListing()
+        {
+            Card selectedCard;
+            cardService.PrintCardStack(LoggedInUser);
+            Console.WriteLine("Choose which card to put up for trade!");
+            int stackNumber = Int32.Parse(Console.ReadLine());
+
+            //Check input
+            if (stackNumber < 1 || stackNumber > LoggedInUser.Stack.Count() + 1)
+            {
+                Console.WriteLine($"Choose a card between 1-{LoggedInUser.Stack.Count()}");
+                return;
+            }
+            else
+            {
+                selectedCard = LoggedInUser.Stack[stackNumber - 1];
+            }
+
+            Console.WriteLine("Do you want in return a spell(1) or monster(2) card?");
+            string requestedType = Console.ReadLine();
+
+            if (requestedType == "1")
+            {
+                requestedType = "Spell";
+            }
+            else if (requestedType == "2")
+            {
+                requestedType = "Monster";
+            }
+            else
+            {
+                Console.WriteLine("Invalid input!");
+                return;
+            }
+
+            Console.WriteLine("What minimum damage card do you want in return?");
+            int requestedDamage = Int32.Parse(Console.ReadLine());
+
+            Console.WriteLine("Do you want type fire(1), water(2), normal(3), or all(4)?");
+            string requestedElement = Console.ReadLine();
+
+            switch (requestedElement)
+            {
+                case "1":
+                    requestedElement = "Fire";
+                    break;
+                case "2":
+                    requestedElement = "Water";
+                    break;
+                case "3":
+                    requestedElement = "Normal";
+                    break;
+                case "4":
+                    requestedElement = "";
+                    break;
+                default:
+                    Console.WriteLine("Invalid input!");
+                    break;
+            }
+
+            tradingService.AddListing(LoggedInUser, selectedCard, requestedType, requestedDamage, requestedElement);
+            cardService.RemoveCard(LoggedInUser, stackNumber - 1);
         }
     }
 }
