@@ -15,7 +15,7 @@ namespace MTCG.Models
 
         public override string ToString()
         {
-            return $"CardName: Spell {Name}, CardDamage: {Damage}, CardType: {Type}";
+            return $"Name: Spell {Name}, Damage: {Damage}, Type: {Type}";
         }
     }
 }

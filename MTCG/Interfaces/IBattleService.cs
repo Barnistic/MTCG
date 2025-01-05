@@ -1,4 +1,5 @@
 ﻿using MTCG.Models;
+using MTCG.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,6 @@ namespace MTCG.Interfaces
     public interface IBattleService
     {
         void Battle(User user);
-        void ProcessResult(User user);
         double CalculateDamage(Card attacker, Card defender);
     }
 }

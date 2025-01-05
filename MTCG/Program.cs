@@ -8,11 +8,19 @@ namespace MTCG
     {
         static void Main(string[] args)
         {
+            //Initialize services
+            IUserService _userService = new UserService();
+            ITradingService _tradingService = new TradingService();
+            ICardService _cardService = new CardService();
 
-            GameService Game = new();
-            Server server = new(10001);
-            //server.Start();
-            Game.StartGame();
+
+            //Initialize game
+            GameService Game = new(_userService, _cardService, _tradingService);
+
+            //Initialize server
+            Server server = new(10001, _userService);
+            server.Start();
+            //Game.StartGame();
 
         }
     }

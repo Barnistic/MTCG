@@ -10,23 +10,32 @@ namespace MTCG.Services
 {
     internal class GameService
     {
-        IUserService userService = new UserService();
-        ICardService cardService = new CardService();
-        IBattleService battleService = new BattleService();
-        ITradingService tradingService = new TradingService();
+        IUserService _userService;
+        ICardService _cardService;
+        ITradingService _tradingService;
 
         private User? LoggedInUser;
         private User testUser = new("testUser", "password"); //For testing
+
         bool gameOver = false;
+
+        public GameService(IUserService userService, ICardService cardService, ITradingService tradingService)
+        {
+            this._userService = userService;
+            this._cardService = cardService;
+            this._tradingService = tradingService;
+        }
+
         public void StartGame()
         {
             //For testing purposes
-            cardService.AddRandomCard(10, testUser);
-            cardService.UpdateDeck(testUser);
+            _userService.AddUser(testUser);
+            _cardService.AddRandomCard(30, testUser);
+            _cardService.UpdateDeck(testUser);
 
-            tradingService.AddListing(testUser, Card.CreateRandomCard(), "Monster", 10, "");
-            tradingService.AddListing(testUser, Card.CreateRandomCard(), "Spell", 7, "Water");
-            tradingService.AddListing(testUser, Card.CreateRandomCard(), "Monster", 2, "Fire");
+            _tradingService.AddListing(testUser, Card.CreateRandomCard(), "Monster", 10, "");
+            _tradingService.AddListing(testUser, Card.CreateRandomCard(), "Spell", 7, "Water");
+            _tradingService.AddListing(testUser, Card.CreateRandomCard(), "Monster", 2, "Fire");
 
             while (true)
             {
@@ -37,16 +46,20 @@ namespace MTCG.Services
                 switch(choice)
                 {
                     case "1":
-                        LoggedInUser = userService.Register();
-                        cardService.AddRandomCard(30, LoggedInUser);
-                        cardService.UpdateDeck(LoggedInUser);
+                        LoggedInUser = _userService.Register();
+                        _userService.AddUser(LoggedInUser);
+                        _cardService.AddRandomCard(30, LoggedInUser);
+                        _cardService.UpdateDeck(LoggedInUser);
                         Console.WriteLine("Successfully registered");
                         break;
                     case "2":
-                        LoggedInUser = userService.Login();
-                        cardService.UpdateDeck(LoggedInUser);
+                        LoggedInUser = _userService.Login();
+                        _userService.AddUser(LoggedInUser);
+                        _cardService.UpdateDeck(LoggedInUser);
                         Console.WriteLine("Successfully logged in!");
                         break;
+                    default:
+                        continue;
                 }
                 Console.WriteLine(LoggedInUser);
                 break;
@@ -56,27 +69,35 @@ namespace MTCG.Services
             {
                 //Console.Clear();
                 Console.WriteLine("Logged in user: " + LoggedInUser.Username);
-                Console.WriteLine("Choose an option: Battle(1), Manage stack(2), Trade(3), Shop(4), Exit(5)");
+                Console.WriteLine("Choose an option: Battle(1), Manage stack(2), Trade(3), Shop(4), Scoreboard(5), Exit(6)");
 
                 string? choice = Console.ReadLine();
 
                 switch (choice)
                 {
                     case "1":
+                        if (LoggedInUser.Stack.Count() < 5)
+                        {
+                            Console.WriteLine("Not enough cards!");
+                            continue;
+                        }
+                        IBattleService battleService = new BattleService(_cardService, _userService);
                         battleService.Battle(LoggedInUser);
-                        battleService.ProcessResult(LoggedInUser);
                         break;
                     case "2":
                         ManageStack(LoggedInUser);
                         break;
                     case "3":
-                        tradingService.PrintMarket();
+                        _tradingService.PrintMarket();
                         Trade(LoggedInUser);
                         break;
                     case "4":
                         Shop(LoggedInUser);
                         break;
                     case "5":
+                        PrintScoreboard();
+                        break;
+                    case "6":
                         gameOver = true;
                         break;
                 }
@@ -94,26 +115,26 @@ namespace MTCG.Services
                 switch (choice)
                 {
                     case "1":
-                        cardService.PrintCardStack(user);
+                        _cardService.PrintCardStack(user);
                         break;
                     case "2":
-                        cardService.PrintCardDeck(user);
+                        _cardService.PrintCardDeck(user);
                         break;
                     case "3":
-                        cardService.PrintCardStack(user);
+                        _cardService.PrintCardStack(user);
                         Console.WriteLine("Choose a card to remove: ");
                         int input = Int32.Parse(Console.ReadLine());
-                        cardService.RemoveCard(user, input - 1);
-                        cardService.UpdateDeck(user);
+                        _cardService.RemoveCard(user, input - 1);
+                        _cardService.UpdateDeck(user);
                         break;
                     case "4":
-                        cardService.PrintCardStack(user);
+                        _cardService.PrintCardStack(user);
                         Console.WriteLine("Choose the first card: ");
                         int i = Int32.Parse(Console.ReadLine());
                         Console.WriteLine("Choose the second card: ");
                         int j = Int32.Parse(Console.ReadLine());
-                        cardService.MoveCard(user, i-1, j-1);
-                        cardService.UpdateDeck(user);
+                        _cardService.MoveCard(user, i-1, j-1);
+                        _cardService.UpdateDeck(user);
                         break;
                     case "5":
                         exit = true;
@@ -136,7 +157,7 @@ namespace MTCG.Services
                 {
                     case "1":
                         PackageService.BuyPackage(user);
-                        cardService.UpdateDeck(user);
+                        _cardService.UpdateDeck(user);
                         break;
                     case "2":
                         exit = true;
@@ -158,7 +179,7 @@ namespace MTCG.Services
                 {
                     //Print market
                     case "1":
-                        tradingService.PrintMarket();
+                        _tradingService.PrintMarket();
                         break;
                     //Accept a trade
                     case "2":
@@ -177,30 +198,30 @@ namespace MTCG.Services
 
         private void AcceptTrade()
         {
-            Console.WriteLine($"Choose which trade to accept! (1-{tradingService.GetMarketCount()})");
+            Console.WriteLine($"Choose which trade to accept! (1-{_tradingService.GetMarketCount()})");
             int tradeNumber = Int32.Parse(Console.ReadLine());
-            if (tradeNumber < 1 || tradeNumber > tradingService.GetMarketCount())
+            if (tradeNumber < 1 || tradeNumber > _tradingService.GetMarketCount())
             {
-                Console.WriteLine($"Choose a number between 1-{tradingService.GetMarketCount()}");
+                Console.WriteLine($"Choose a number between 1-{_tradingService.GetMarketCount()}");
                 return;
             }
             else
             {
-                cardService.PrintCardStack(LoggedInUser);
+                _cardService.PrintCardStack(LoggedInUser);
                 Console.WriteLine("Pick which card to trade from your stack!");
 
                 int stackNumber = Int32.Parse(Console.ReadLine());
-                TradeEntry selectedListing = tradingService.GetListing(tradeNumber - 1);
+                TradeEntry selectedListing = _tradingService.GetListing(tradeNumber - 1);
 
-                bool isTradeValid = tradingService.ValidateTrade(LoggedInUser.Stack[stackNumber - 1], selectedListing);
-                Console.WriteLine("DEBUG: Selected card from stack: " + LoggedInUser.Stack[stackNumber - 1] + ", Listing: " + tradingService.GetListing(tradeNumber - 1));
+                bool isTradeValid = _tradingService.ValidateTrade(LoggedInUser.Stack[stackNumber - 1], selectedListing);
+                Console.WriteLine("DEBUG: Selected card from stack: " + LoggedInUser.Stack[stackNumber - 1] + ", Listing: " + _tradingService.GetListing(tradeNumber - 1));
 
                 if (isTradeValid)
                 {
-                    cardService.AddCard(selectedListing.owner, LoggedInUser.Stack[stackNumber - 1]); //Add requested card to the trade's owner
-                    cardService.AddCard(LoggedInUser, selectedListing.card); //Add traded card to the user's deck
-                    cardService.RemoveCard(LoggedInUser, stackNumber - 1); //Remove selected card from the stack
-                    tradingService.RemoveListing(selectedListing); //Remove listing from the market
+                    _cardService.AddCard(selectedListing.owner, LoggedInUser.Stack[stackNumber - 1]); //Add requested card to the trade's owner
+                    _cardService.AddCard(LoggedInUser, selectedListing.card); //Add traded card to the user's deck
+                    _cardService.RemoveCard(LoggedInUser, stackNumber - 1); //Remove selected card from the stack
+                    _tradingService.RemoveListing(selectedListing); //Remove listing from the market
                     Console.WriteLine("Successfull trade!");
                 }
                 else
@@ -214,7 +235,7 @@ namespace MTCG.Services
         private void CreateListing()
         {
             Card selectedCard;
-            cardService.PrintCardStack(LoggedInUser);
+            _cardService.PrintCardStack(LoggedInUser);
             Console.WriteLine("Choose which card to put up for trade!");
             int stackNumber = Int32.Parse(Console.ReadLine());
 
@@ -271,8 +292,19 @@ namespace MTCG.Services
                     break;
             }
 
-            tradingService.AddListing(LoggedInUser, selectedCard, requestedType, requestedDamage, requestedElement);
-            cardService.RemoveCard(LoggedInUser, stackNumber - 1);
+            _tradingService.AddListing(LoggedInUser, selectedCard, requestedType, requestedDamage, requestedElement);
+            _cardService.RemoveCard(LoggedInUser, stackNumber - 1);
+        }
+
+        private void PrintScoreboard()
+        {
+            int i = 1;
+            List<User> users = _userService.GetUsers();
+            foreach (User user in users)
+            {
+                Console.WriteLine($"{i}: {user}, ELO: {user.ELO}");
+                i++;
+            }
         }
     }
 }

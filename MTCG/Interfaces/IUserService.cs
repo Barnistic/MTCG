@@ -13,5 +13,7 @@ namespace MTCG.Interfaces
         User Login();
         void Win(User user);
         void Lose(User user);
+        void AddUser(User user);
+        List<User> GetUsers();
     }
 }

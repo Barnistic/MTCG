@@ -14,6 +14,9 @@ namespace MTCG.Services
     {
         private string AdminName = "admin";
         private string AdminPassword = "admin";
+
+        private List<User> users = new List<User>(); // Initialize the list to avoid null reference
+
         public User Register()
         {
             // Check if user already exists in the database, handle errors
@@ -27,6 +30,7 @@ namespace MTCG.Services
             string password = Console.ReadLine();
 
             User newUser = new(username, password);
+
             return newUser;
         }
 
@@ -54,13 +58,23 @@ namespace MTCG.Services
             return newUser;
         }
 
-        public void Win(User user) { user.ELO += 3; }
+        public void Win(User user) { user.Coins += 2; user.ELO += 3; }
         public void Lose(User user) { user.ELO -= 5; }
 
         private bool Authenticate(string username, string password)
         {
             if (username == AdminName && password == AdminPassword) return true;
             return false;
+        }
+
+        public void AddUser(User user)
+        {
+            users.Add(user);
+        }
+
+        public List<User> GetUsers()
+        {
+            return users;
         }
     }
 }
