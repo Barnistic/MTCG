@@ -18,12 +18,10 @@ namespace MTCG
         private readonly int _port;
         private readonly Dictionary<string, User> _users; // Dictionary to store User objects
         private readonly RequestHandler _requestHandler;
-        private readonly IUserService _userService;
 
-        public Server(int port, IUserService userService)
+        public Server(int port)
         {
             _port = port;
-            _userService = userService;
             _users = new Dictionary<string, User>(); // Initialize the dictionary with User objects
             _requestHandler = new RequestHandler(_users);
         }

@@ -18,7 +18,7 @@ namespace MTCG
             GameService Game = new(_userService, _cardService, _tradingService);
 
             //Initialize server
-            Server server = new(10001, _userService);
+            Server server = new(10001);
             server.Start();
             //Game.StartGame();
 
