@@ -1,6 +1,7 @@
 ﻿using MTCG.Infrastructure;
 using MTCG.Interfaces;
 using MTCG.Models;
+using MTCG.Repositories.Interfaces;
 using MTCG.Services;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,14 @@ namespace MTCG
         private readonly Dictionary<string, User> _users; // Dictionary to store User objects
         private readonly RequestHandler _requestHandler;
 
-        public Server(int port)
+        IUserRepository _userRepository;
+
+        public Server(int port, IUserRepository userRepository)
         {
             _port = port;
             _users = new Dictionary<string, User>(); // Initialize the dictionary with User objects
-            _requestHandler = new RequestHandler(_users);
+            _requestHandler = new RequestHandler(_users, userRepository);
+            _userRepository = userRepository;
         }
 
         public void Start()

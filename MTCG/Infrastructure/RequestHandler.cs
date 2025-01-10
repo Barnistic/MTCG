@@ -1,4 +1,5 @@
 ﻿using MTCG.Models;
+using MTCG.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,13 @@ namespace MTCG.Infrastructure
     {
         private readonly Dictionary<string, User> _users;
         private readonly Dictionary<string, string> _sessions; // token and username
+        private readonly IUserRepository _userRepository;
 
-        public RequestHandler(Dictionary<string, User> users)
+        public RequestHandler(Dictionary<string, User> users, IUserRepository userRepository)
         {
             _users = users;
             _sessions = new Dictionary<string, string>();
+            _userRepository = userRepository;
         }
 
         public void HandleRequest(string[] requestLines, NetworkStream stream)
@@ -101,6 +104,7 @@ namespace MTCG.Infrastructure
                 _users.Add(user.Username, user);
                 string token = "Bearer " + user.Username + "-token";
                 _sessions.Add(token, user.Username);
+                _userRepository.AddUser(user);
                 SendResponse(stream, "201 Created", "User created successfully, token: " + token);
             }
             catch (Exception)
