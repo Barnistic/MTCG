@@ -27,9 +27,10 @@ namespace MTCG.Repositories
                 connection.Open();
 
                 using var command = new NpgsqlCommand(@"
-                        SELECT id, username, password, coins, elo 
-                        FROM users 
-                        WHERE username = @Username", connection);
+                            SELECT u.id, u.username, u.password, u.coins, p.name, p.bio, p.image
+                            FROM users u
+                            LEFT JOIN user_profiles p ON u.id = p.user_id
+                            WHERE u.username = @Username", connection);
                 command.Parameters.AddWithValue("@Username", username);
 
                 using var reader = command.ExecuteReader();
@@ -37,16 +38,28 @@ namespace MTCG.Repositories
                 {
                     var userDto = new UserDTO
                     {
-                        id = reader["id"].ToString(),
-                        name = reader["username"].ToString(),
-                        password = reader["password"].ToString(),
-                        coins = Convert.ToInt32(reader["coins"]),
-                        elo = Convert.ToInt32(reader["elo"])
+                        Id = reader["id"].ToString(),
+                        Name = reader["username"].ToString(),
+                        Password = reader["password"].ToString(),
+                        Coins = Convert.ToInt32(reader["coins"])
                     };
 
-                    Console.WriteLine($"Retrieved User: {userDto.id}, {userDto.name}, {userDto.password}, {userDto.coins}, {userDto.elo}");
+                    var userProfile = new UserProfile
+                    {
+                        UserId = userDto.Id,
+                        Name = reader["name"]?.ToString(),
+                        Bio = reader["bio"]?.ToString(),
+                        Image = reader["image"]?.ToString()
+                    };
 
-                    return new User(userDto);
+                    Console.WriteLine($"Retrieved User: {userDto.Id}, {userDto.Name}, {userDto.Password}, {userDto.Coins}");
+
+                    var user = new User(userDto)
+                    {
+                        Profile = userProfile
+                    };
+
+                    return user;
                 }
 
                 return null;
@@ -58,7 +71,6 @@ namespace MTCG.Repositories
             }
         }
 
-
         public List<User> GetAllUsers()
         {
             try
@@ -67,9 +79,8 @@ namespace MTCG.Repositories
                 connection.Open();
 
                 using var command = new NpgsqlCommand(@"
-                        SELECT id, username, password, coins, elo 
-                        FROM users 
-                        ORDER BY elo DESC", connection);
+                            SELECT id, username, password, coins 
+                            FROM users", connection);
 
                 using var reader = command.ExecuteReader();
                 var users = new List<User>();
@@ -77,11 +88,10 @@ namespace MTCG.Repositories
                 {
                     var userDto = new UserDTO
                     {
-                        id = reader["id"].ToString(),
-                        name = reader["username"].ToString(),
-                        password = reader["password"].ToString(),
-                        coins = Convert.ToInt32(reader["coins"]),
-                        elo = Convert.ToInt32(reader["elo"])
+                        Id = reader["id"].ToString(),
+                        Name = reader["username"].ToString(),
+                        Password = reader["password"].ToString(),
+                        Coins = Convert.ToInt32(reader["coins"])
                     };
 
                     users.Add(new User(userDto));
@@ -104,13 +114,12 @@ namespace MTCG.Repositories
                 connection.Open();
 
                 using var command = new NpgsqlCommand(@"
-                        INSERT INTO users (id, username, password, coins, elo) 
-                        VALUES (@Id, @Username, @Password, @Coins, @Elo)", connection);
+                            INSERT INTO users (id, username, password, coins) 
+                            VALUES (@Id, @Username, @Password, @Coins)", connection);
                 command.Parameters.AddWithValue("@Id", user.Id);
                 command.Parameters.AddWithValue("@Username", user.Username);
                 command.Parameters.AddWithValue("@Password", user.Password);
                 command.Parameters.AddWithValue("@Coins", user.Coins);
-                command.Parameters.AddWithValue("@Elo", user.ELO);
 
                 command.ExecuteNonQuery();
                 Console.WriteLine($"Added user: {user.Username}");
@@ -129,13 +138,13 @@ namespace MTCG.Repositories
                 connection.Open();
 
                 using var command = new NpgsqlCommand(@"
-                        INSERT INTO user_profiles (user_id, name, bio, image)
-                        VALUES (@UserId, @Name, @Bio, @Image)
-                        ON CONFLICT (user_id) 
-                        DO UPDATE SET 
-                            name = @Name,
-                            bio = @Bio,
-                            image = @Image", connection);
+                            INSERT INTO user_profiles (user_id, name, bio, image)
+                            VALUES (@UserId, @Name, @Bio, @Image)
+                            ON CONFLICT (user_id) 
+                            DO UPDATE SET 
+                                name = @Name,
+                                bio = @Bio,
+                                image = @Image", connection);
                 command.Parameters.AddWithValue("@UserId", userProfile.UserId);
                 command.Parameters.AddWithValue("@Name", userProfile.Name);
                 command.Parameters.AddWithValue("@Bio", userProfile.Bio);

@@ -81,8 +81,8 @@ namespace MTCG.Services
                             Console.WriteLine("Not enough cards!");
                             continue;
                         }
-                        IBattleService battleService = new BattleService(_cardService, _userService);
-                        battleService.Battle(LoggedInUser);
+                        //IBattleService battleService = new BattleService(_cardService, _userService);
+                        //battleService.Battle(LoggedInUser);
                         break;
                     case "2":
                         ManageStack(LoggedInUser);

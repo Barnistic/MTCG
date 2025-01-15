@@ -10,7 +10,8 @@ namespace MTCG.Services.Interfaces
 {
     public interface IBattleService
     {
-        void Battle(User user);
+        void Battle(User user1, User user2);
         double CalculateDamage(Card attacker, Card defender);
+        string GetBattleLog();
     }
 }

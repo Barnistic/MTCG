@@ -43,6 +43,7 @@ namespace MTCG.Infrastructure
                 string token = "Bearer " + newUser.Username + "-mtcgToken";
                 _sessions.Add(token, newUser.Username);
                 _userRepository.AddUser(newUser);
+                _gameRepository.CreateStats(newUser);
                 SendResponse(stream, "201 Created", "{ \"token\": \"" + token + "\" }");
             }
             catch (Exception)
@@ -60,7 +61,16 @@ namespace MTCG.Infrastructure
                 if (requester.Username == "admin" || requester.Username == username)
                 {
                     var userResponse = _userRepository.GetUser(username);
-                    string userJson = JsonSerializer.Serialize(userResponse);
+                    var responseObj = new
+                    {
+                        userResponse.Username,
+                        userResponse.Profile.Name,
+                        userResponse.Profile.Bio,
+                        userResponse.Profile.Image,
+                        userResponse.Coins
+                        
+                    };
+                    string userJson = JsonSerializer.Serialize(responseObj);
                     SendResponse(stream, "200 OK", userJson);
                 }
                 else
@@ -114,8 +124,8 @@ namespace MTCG.Infrastructure
         private void HandleSessionPost(string[] requestLines, NetworkStream stream)
         {
             string body = string.Join("\r\n", requestLines).Split("\r\n\r\n")[1];
-            Console.WriteLine("Request body:");
-            Console.WriteLine(body);
+            //Console.WriteLine("Request body:");
+            //Console.WriteLine(body);
             try
             {
                 Console.WriteLine("\nHandleSessionPost");
@@ -128,16 +138,21 @@ namespace MTCG.Infrastructure
                 if (_users.ContainsKey(loginDto.Username) && _users[loginDto.Username].Password == loginDto.Password)
                 {
                     string token = $"Bearer {loginDto.Username}-mtcgToken";
-                    _sessions.Add(token, loginDto.Username);
-                    SendResponse(stream, "200 OK", token);
+                    if (!_sessions.ContainsKey(token))
+                    {
+                        _sessions.Add(token, loginDto.Username);
+                    }
+
+                    SendResponse(stream, "200 OK", "{ \"token\": \"" + token + "\" }");
                 }
                 else
                 {
                     SendResponse(stream, "401 Unauthorized", "Invalid credentials");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Exception: {ex.Message}");
                 SendResponse(stream, "400 Bad Request", "Invalid JSON payload");
             }
         }

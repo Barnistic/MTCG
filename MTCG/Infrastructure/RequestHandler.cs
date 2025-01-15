@@ -1,6 +1,8 @@
 ﻿using MTCG.Models;
 using MTCG.Repositories.DTOs;
 using MTCG.Repositories.Interfaces;
+using MTCG.Services;
+using MTCG.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,25 +19,29 @@ namespace MTCG.Infrastructure
         private readonly Dictionary<string, string> _sessions; // token and username
         private readonly IUserRepository _userRepository;
         private readonly ICardRepository _cardRepository;
+        private readonly IGameRepository _gameRepository;
         private readonly List<Card> _cardPackages;
         private readonly List<TradeEntry> _tradingDeals;
 
-        public RequestHandler(Dictionary<string, User> users, IUserRepository userRepository, ICardRepository cardRepository)
+        private readonly IBattleService _battleService = new BattleService();
+        private static readonly Queue<User> _battleLobby = new Queue<User>();
+
+        public RequestHandler(Dictionary<string, User> users, IUserRepository userRepository, ICardRepository cardRepository, IGameRepository gameRepository)
         {
             _users = users;
             _sessions = new Dictionary<string, string>();
             _userRepository = userRepository;
             _cardRepository = cardRepository;
+            _gameRepository = gameRepository;
             _cardPackages = new List<Card>();
             _tradingDeals = new List<TradeEntry>();
 
             //Admin user creation
             UserDTO adminUser = new();
-            adminUser.id = "1";
-            adminUser.name = "admin";
-            adminUser.password = "admin";
-            adminUser.coins = 10000;
-            adminUser.elo = 0;
+            adminUser.Id = "1";
+            adminUser.Name = "admin";
+            adminUser.Password = "admin";
+            adminUser.Coins = 10000;
             User admin = new(adminUser);
             _users.Add("admin", admin);
             _sessions.Add("Bearer admin-mtcgToken", "admin");
@@ -109,7 +115,7 @@ namespace MTCG.Infrastructure
                         HandleCardsGet(requester, stream);
                     }
                 }
-                else if (endpoint == "/deck")
+                else if (endpoint.StartsWith("/deck"))
                 {
                     if (method == "GET")
                     {
@@ -180,29 +186,6 @@ namespace MTCG.Infrastructure
                 Console.WriteLine("Stack Trace: " + ex.StackTrace);
                 SendResponse(stream, "500 Internal Server Error", "An error occurred while processing the request");
             }
-        }
-
-        private void HandleStatsGet(User requester, NetworkStream stream)
-        {
-            Console.WriteLine("\nHandleStatsGet");
-            string statsJson = JsonSerializer.Serialize(new { requester.Username, requester.ELO, requester.Coins });
-            SendResponse(stream, "200 OK", statsJson);
-        }
-
-        private void HandleScoreboardGet(NetworkStream stream)
-        {
-            Console.WriteLine("\nHandleScoreboardGet");
-            var scoreboard = _users.Values.OrderByDescending(u => u.ELO).Select(u => new { u.Username, u.ELO, u.Coins }).ToList();
-            string scoreboardJson = JsonSerializer.Serialize(scoreboard);
-            SendResponse(stream, "200 OK", scoreboardJson);
-        }
-
-
-        private void HandleBattlePost(User requester, NetworkStream stream)
-        {
-            Console.WriteLine("\nHandleBattlePost");
-            // Implement battle logic here
-            SendResponse(stream, "200 OK", "The battle has been carried out successfully");
         }
 
         private void HandleTradingsGet(NetworkStream stream)

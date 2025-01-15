@@ -29,9 +29,10 @@ namespace MTCG.Infrastructure
         {
             Console.WriteLine("\nHandleDeckGet");
             string format = "json";
-            if (requestLines.Length > 1 && requestLines[2].Contains("format="))
+            string endpoint = requestLines[0].Split(' ')[1];
+            if (endpoint.Contains("format="))
             {
-                format = requestLines[2].Split("format=")[1].Split(' ')[0];
+                format = endpoint.Split("format=")[1].Split(' ')[0];
             }
             if (requester.Deck.Any())
             {

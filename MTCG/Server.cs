@@ -19,11 +19,11 @@ namespace MTCG
         private readonly Dictionary<string, User> _users; // Dictionary to store User objects
         private readonly RequestHandler _requestHandler;
 
-        public Server(int port, IUserRepository userRepository, ICardRepository cardRepository)
+        public Server(int port, IUserRepository userRepository, ICardRepository cardRepository, IGameRepository gameRepository)
         {
             _port = port;
             _users = new Dictionary<string, User>(); // Initialize the dictionary with User objects
-            _requestHandler = new RequestHandler(_users, userRepository, cardRepository);
+            _requestHandler = new RequestHandler(_users, userRepository, cardRepository, gameRepository);
         }
 
         public void Start()

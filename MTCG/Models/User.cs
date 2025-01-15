@@ -14,6 +14,9 @@ namespace MTCG.Models
         public string Password { get; set; }
         public int ELO { get; set; } = 100;
         public int Coins { get; set; } = 20;
+        public int Win { get; set; } = 0;
+        public int Loss { get; set; } = 0;
+        public UserProfile Profile;
 
         //The deck will be the first 5 card of the Stack
         public List<Card> Deck { get; set; } = new();
@@ -31,11 +34,11 @@ namespace MTCG.Models
         public User(UserDTO userDto)
         {
 
-            this.Id = userDto.id;
-            this.Username = userDto.name;
-            this.Password = userDto.password;
-            this.ELO = userDto.elo;
-            this.Coins = userDto.coins;
+            this.Id = userDto.Id;
+            this.Username = userDto.Name;
+            this.Password = userDto.Password;
+            this.ELO = userDto.Elo;
+            this.Coins = userDto.Coins;
 
         }
         public override string ToString()
