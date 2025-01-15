@@ -19,11 +19,11 @@ namespace MTCG
         private readonly Dictionary<string, User> _users; // Dictionary to store User objects
         private readonly RequestHandler _requestHandler;
 
-        public Server(int port, IUserRepository userRepository, ICardRepository cardRepository, IGameRepository gameRepository)
+        public Server(int port, IUserRepository userRepository, ICardRepository cardRepository, IGameRepository gameRepository, ITradingRepository tradingRepository)
         {
             _port = port;
             _users = new Dictionary<string, User>(); // Initialize the dictionary with User objects
-            _requestHandler = new RequestHandler(_users, userRepository, cardRepository, gameRepository);
+            _requestHandler = new RequestHandler(_users, userRepository, cardRepository, gameRepository, tradingRepository);
         }
 
         public void Start()
@@ -55,7 +55,7 @@ namespace MTCG
                     int bytesRead = stream.Read(buffer, 0, buffer.Length);
                     string request = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-                    Console.WriteLine("Request received");
+                    Console.WriteLine("\nRequest received");
                     //Console.WriteLine(request);
 
                     // Parse the HTTP request

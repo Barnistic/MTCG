@@ -28,6 +28,7 @@ namespace MTCG.Infrastructure
                         DROP TABLE IF EXISTS user_profiles CASCADE;
                         DROP TABLE IF EXISTS decks CASCADE;
                         DROP TABLE IF EXISTS stats CASCADE;
+                        DROP TABLE IF EXISTS trades CASCADE;
                     ", connection))
             {
                 command.ExecuteNonQuery();
@@ -81,6 +82,18 @@ namespace MTCG.Infrastructure
                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
                 )";
 
+            var createTradesTable = @"
+                CREATE TABLE IF NOT EXISTS trades (
+                    user_id VARCHAR(255) NOT NULL,
+                    id VARCHAR(255),
+                    card_id VARCHAR(255),
+                    reqType VARCHAR(255),
+                    reqDamage VARCHAR(255),
+                    PRIMARY KEY (id),
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (card_id) REFERENCES cards(id) ON DELETE CASCADE
+                )";
+
             var createAdminUser = @"INSERT INTO users (id, username, password, coins) 
                             VALUES ('1', 'admin', 'admin', 10000)";
 
@@ -106,6 +119,10 @@ namespace MTCG.Infrastructure
                 command.ExecuteNonQuery();
             }
             using (var command = new NpgsqlCommand(createStatsTable, connection))
+            {
+                command.ExecuteNonQuery();
+            }
+            using (var command = new NpgsqlCommand(createTradesTable, connection))
             {
                 command.ExecuteNonQuery();
             }

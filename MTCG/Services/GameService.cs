@@ -218,8 +218,8 @@ namespace MTCG.Services
 
                 if (isTradeValid)
                 {
-                    _cardService.AddCard(selectedListing.owner, LoggedInUser.Stack[stackNumber - 1]); //Add requested card to the trade's owner
-                    _cardService.AddCard(LoggedInUser, selectedListing.card); //Add traded card to the user's deck
+                    //_cardService.AddCard(selectedListing.owner, LoggedInUser.Stack[stackNumber - 1]); //Add requested card to the trade's owner
+                    //_cardService.AddCard(LoggedInUser, selectedListing.card); //Add traded card to the user's deck
                     _cardService.RemoveCard(LoggedInUser, stackNumber - 1); //Remove selected card from the stack
                     _tradingService.RemoveListing(selectedListing); //Remove listing from the market
                     Console.WriteLine("Successfull trade!");

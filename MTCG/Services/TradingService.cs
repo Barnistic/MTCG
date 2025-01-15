@@ -17,14 +17,14 @@ namespace MTCG.Services
 
         public void AddListing(User owner, Card card, string type, int minDamage, string element)
         {
-            TradeEntry newOrder = new(owner, card, type, minDamage, element);
-            Market?.Add(newOrder);
+            //TradeEntry newOrder = new(owner, card, type, minDamage, element);
+            //Market?.Add(newOrder);
         }
 
         public bool ValidateTrade(Card offeredCard, TradeEntry requestedOrder)
         {
             //Check if card type (Monster or Spell) is matching
-            bool TypeMatch = (requestedOrder.type == "Monster" && offeredCard is MonsterCard) || (requestedOrder.type == "Spell" && offeredCard is SpellCard);
+            /*bool TypeMatch = (requestedOrder.type == "Monster" && offeredCard is MonsterCard) || (requestedOrder.type == "Spell" && offeredCard is SpellCard);
 
             if (TypeMatch && offeredCard.Damage >= requestedOrder.minDamage)
             {
@@ -32,7 +32,7 @@ namespace MTCG.Services
                 {
                     return true;
                 }
-            }
+            }*/
             return false;
         }
 

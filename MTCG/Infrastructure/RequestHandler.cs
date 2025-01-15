@@ -20,19 +20,21 @@ namespace MTCG.Infrastructure
         private readonly IUserRepository _userRepository;
         private readonly ICardRepository _cardRepository;
         private readonly IGameRepository _gameRepository;
+        private readonly ITradingRepository _tradingRepository;
         private readonly List<Card> _cardPackages;
         private readonly List<TradeEntry> _tradingDeals;
 
         private readonly IBattleService _battleService = new BattleService();
         private static readonly Queue<User> _battleLobby = new Queue<User>();
 
-        public RequestHandler(Dictionary<string, User> users, IUserRepository userRepository, ICardRepository cardRepository, IGameRepository gameRepository)
+        public RequestHandler(Dictionary<string, User> users, IUserRepository userRepository, ICardRepository cardRepository, IGameRepository gameRepository, ITradingRepository tradingRepository)
         {
             _users = users;
             _sessions = new Dictionary<string, string>();
             _userRepository = userRepository;
             _cardRepository = cardRepository;
             _gameRepository = gameRepository;
+            _tradingRepository = tradingRepository;
             _cardPackages = new List<Card>();
             _tradingDeals = new List<TradeEntry>();
 
@@ -167,7 +169,7 @@ namespace MTCG.Infrastructure
                     }
                     else if (method == "POST")
                     {
-                        //HandleTradingDealPost(tradingDealId, requester, requestLines, stream);
+                        HandleTradingDealPost(tradingDealId, requester, requestLines, stream);
                     }
                 }
                 else
@@ -187,98 +189,6 @@ namespace MTCG.Infrastructure
                 SendResponse(stream, "500 Internal Server Error", "An error occurred while processing the request");
             }
         }
-
-        private void HandleTradingsGet(NetworkStream stream)
-        {
-            Console.WriteLine("\nHandleTradingsGet");
-            if (_tradingDeals.Any())
-            {
-                string dealsJson = JsonSerializer.Serialize(_tradingDeals);
-                SendResponse(stream, "200 OK", dealsJson);
-            }
-            else
-            {
-                SendResponse(stream, "204 No Content", "There are no trading deals available");
-            }
-        }
-
-        private void HandleTradingPost(User requester, string[] requestLines, NetworkStream stream)
-        {
-            try
-            {
-                Console.WriteLine("\nHandleTradingPost\n");
-                string body = string.Join("\r\n", requestLines).Split("\r\n\r\n")[1];
-                var tradingDeal = JsonSerializer.Deserialize<TradeEntry>(body);
-                if (tradingDeal == null || tradingDeal.card == null || string.IsNullOrEmpty(tradingDeal.card.Id.ToString()))
-                {
-                    SendResponse(stream, "400 Bad Request", "Invalid request payload");
-                    return;
-                }
-                if (_tradingDeals.Any(d => d.card.Id == tradingDeal.card.Id))
-                {
-                    SendResponse(stream, "409 Conflict", "A deal with this card ID already exists");
-                    return;
-                }
-                if (!requester.Stack.Any(c => c.Id == tradingDeal.card.Id) || requester.Deck.Any(c => c.Id == tradingDeal.card.Id))
-                {
-                    SendResponse(stream, "403 Forbidden", "The deal contains a card that is not owned by the user or locked in the deck");
-                    return;
-                }
-                _tradingDeals.Add(tradingDeal);
-                SendResponse(stream, "201 Created", "Trading deal successfully created");
-            }
-            catch (Exception)
-            {
-                SendResponse(stream, "400 Bad Request", "Invalid JSON payload");
-            }
-        }
-
-        private void HandleTradingDelete(string tradingDealId, User requester, NetworkStream stream)
-        {
-            Console.WriteLine("\nHandleTradingDelete");
-            var deal = _tradingDeals.FirstOrDefault(d => d.card.Id.ToString() == tradingDealId);
-            if (deal == null)
-            {
-                SendResponse(stream, "404 Not Found", "The provided deal ID was not found");
-                return;
-            }
-            if (deal.owner.Username != requester.Username)
-            {
-                SendResponse(stream, "403 Forbidden", "The deal contains a card that is not owned by the user");
-                return;
-            }
-            _tradingDeals.Remove(deal);
-            SendResponse(stream, "200 OK", "Trading deal successfully deleted");
-        }
-
-        /*private void HandleTradingDealPost(string tradingDealId, User requester, string[] requestLines, NetworkStream stream)
-        {
-            try
-            {
-                Console.WriteLine("\nHandleTradingDealPost\n");
-                string body = string.Join("\r\n", requestLines).Split("\r\n\r\n")[1];
-                var offeredCardId = JsonSerializer.Deserialize<Guid>(body);
-                var deal = _tradingDeals.FirstOrDefault(d => d.card.Id.ToString() == tradingDealId);
-                if (deal == null)
-                {
-                    SendResponse(stream, "404 Not Found", "The provided deal ID was not found");
-                    return;
-                }
-                if (requester.Username == deal.owner.Username || !requester.Stack.Any(c => c.Id == offeredCardId) || requester.Deck.Any(c => c.Id == offeredCardId))
-                {
-                    SendResponse(stream, "403 Forbidden", "The offered card is not owned by the user, or the requirements are not met, or the offered card is locked in the deck, or the user tries to trade with self");
-                    return;
-                }
-                // Implement trade logic here
-                SendResponse(stream, "200 OK", "Trading deal successfully executed");
-            }
-            catch (Exception)
-            {
-                SendResponse(stream, "400 Bad Request", "Invalid JSON payload");
-            }
-        }*/
-
-
 
         private User ValidateToken(string token)
         {

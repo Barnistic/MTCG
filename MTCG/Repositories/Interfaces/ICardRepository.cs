@@ -13,5 +13,6 @@ namespace MTCG.Repositories.Interfaces
         void ChangeCardOwner(string userId, string cardId);
         List<Card> GetUserStack(string ownerid);
         void UpdateDeck(string userId, List<string> cardId);
+        Card GetCardById(string cardId);
     }
 }

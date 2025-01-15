@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MTCG.Repositories.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,32 +9,19 @@ namespace MTCG.Models
 {
     public class TradeEntry
     {
-        public User owner;
-        public Card card;
-        public string type;
-        public int minDamage;
-        public string element;
+        public string Id { get; set; }
+        public string CardToTrade { get; set; }
+        public string Type { get; set; }
+        public int MinimumDamage { get; set; }
 
-        public TradeEntry(User owner, Card card, string type, int minDamage, string element)
-        {
-            this.owner = owner;
-            this.card = card;
-            this.type = type;
-            this.minDamage = minDamage;
-            this.element = element;
-        }
+        public TradeEntry() { }
 
-        public override string ToString()
+        public TradeEntry(TradeEntryDTO dto)
         {
-            if (element == "")
-            {
-                return $"{owner}: [H] {card} [W] {type}, {minDamage}";
-            }
-            else
-            {
-                return $"{owner}: [H] {card} [W] {type}, {minDamage}, {element}";
-            }
-            
+            this.Id = Guid.NewGuid().ToString();
+            this.CardToTrade = dto.Card_id;
+            this.Type = dto.ReqType;
+            this.MinimumDamage = dto.ReqDamage;
         }
     }
 }

@@ -25,13 +25,14 @@ namespace MTCG
             IUserRepository userRepository = new UserRepository(connectionString);
             ICardRepository cardRepository = new CardRepository(connectionString);
             IGameRepository gameRepository = new GameRepository(connectionString);
+            ITradingRepository tradingRepository = new TradingRepository(connectionString);
 
 
             //Initialize game
             GameService Game = new(_userService, _cardService, _tradingService);
 
             //Initialize server
-            Server server = new(10001, userRepository, cardRepository, gameRepository);
+            Server server = new(10001, userRepository, cardRepository, gameRepository, tradingRepository);
             server.Start();
             //Game.StartGame();
 

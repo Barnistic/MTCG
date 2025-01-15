@@ -134,5 +134,41 @@ namespace MTCG.Repositories
                 Console.WriteLine($"Error in UpdateDeck: {e.Message}");
             }
         }
+
+        public Card GetCardById(string cardId)
+        {
+            try
+            {
+                using var connection = new NpgsqlConnection(_connectionString);
+                connection.Open();
+
+                using var command = new NpgsqlCommand(@"
+                        SELECT id, name, damage, element_type
+                        FROM cards
+                        WHERE id = @CardId", connection);
+                command.Parameters.AddWithValue("@CardId", cardId);
+
+                using var reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    var card = new Card
+                    (
+                        reader["name"].ToString(),
+                        (int)reader["damage"],
+                        reader["element_type"].ToString()
+                    );
+
+                    Console.WriteLine($"Retrieved card: {card.Name} with ID: {card.Id}");
+                    return card;
+                }
+
+                return null;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error in GetCardById: {e.Message}");
+                return null;
+            }
+        }
     }
 }
