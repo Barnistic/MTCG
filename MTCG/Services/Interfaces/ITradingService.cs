@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static MTCG.Services.TradingService;
 
-namespace MTCG.Interfaces
+namespace MTCG.Services.Interfaces
 {
     public interface ITradingService
     {

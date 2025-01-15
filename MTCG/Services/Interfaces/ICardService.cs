@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCG.Interfaces
+namespace MTCG.Services.Interfaces
 {
     public interface ICardService
     {

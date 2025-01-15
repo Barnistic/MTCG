@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MTCG.Repositories.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace MTCG.Models
 {
-    public abstract class Card
+    public class Card
     {
-        public Guid Id = new();
+        public Guid Id;
         public string Name { get; set; }
-        public int Damage { get; set; }
+        public float Damage { get; set; }
         public string Type { get; set; }
 
         protected static readonly string[] Elements = { "Water", "Normal", "Fire" };
@@ -19,6 +20,26 @@ namespace MTCG.Models
             Name = cardName;
             Damage = cardDamage;
             Type = cardType;
+            Id = new();
+        }
+
+        public Card(CardDTO cardDto)
+        {
+            this.Name = cardDto.Name;
+            if (cardDto.Name.StartsWith("Fire"))
+            {
+                this.Type = "Fire";
+            }
+            else if (cardDto.Name.StartsWith("Water"))
+            {
+                this.Type = "Water";
+            }
+            else
+            {
+                this.Type = "Regular";
+            }
+            this.Damage = cardDto.Damage;
+            this.Id = new Guid(cardDto.Id);
         }
 
         private static readonly Random random = new();

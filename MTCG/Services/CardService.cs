@@ -1,5 +1,5 @@
-﻿using MTCG.Interfaces;
-using MTCG.Models;
+﻿using MTCG.Models;
+using MTCG.Services.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;

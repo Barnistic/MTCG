@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MTCG.Repositories.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,19 @@ namespace MTCG.Models
         }
 
         public User() { }
+
+        public User(UserDTO userDto)
+        {
+            if(Guid.TryParse(userDto.id, out Guid parsedId))
+            {
+                this.Id = parsedId;
+            }
+            this.Username = userDto.name;
+            this.Password = userDto.password;
+            this.ELO = userDto.elo;
+            this.Coins = userDto.coins;
+
+        }
         public override string ToString()
         {
             return $"{Username}";

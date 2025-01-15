@@ -1,5 +1,4 @@
 ﻿using MTCG.Infrastructure;
-using MTCG.Interfaces;
 using MTCG.Models;
 using MTCG.Repositories.Interfaces;
 using MTCG.Services;
@@ -39,7 +38,7 @@ namespace MTCG
             while (true)
             {
                 TcpClient client = listener.AcceptTcpClient();
-                Console.WriteLine("Client connected!");
+                Console.WriteLine("\n\nClient connected!");
 
                 // Handle each client connection in a separate thread
                 ThreadPool.QueueUserWorkItem(HandleClient, client);
@@ -59,8 +58,8 @@ namespace MTCG
                     int bytesRead = stream.Read(buffer, 0, buffer.Length);
                     string request = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-                    Console.WriteLine("Request received:");
-                    Console.WriteLine(request);
+                    Console.WriteLine("Request received");
+                    //Console.WriteLine(request);
 
                     // Parse the HTTP request
                     var lines = request.Split("\r\n");
