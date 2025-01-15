@@ -48,7 +48,6 @@ namespace MTCG.Infrastructure
                     name VARCHAR(255) NOT NULL,
                     damage INT NOT NULL,
                     element_type VARCHAR(255) NOT NULL,
-                    ismonster BOOL,
                     ownerid VARCHAR(255),
                     FOREIGN KEY (ownerid) REFERENCES users(id)
                 )";
@@ -61,6 +60,15 @@ namespace MTCG.Infrastructure
                     image VARCHAR(255),
                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
                 )";
+
+            var createDecksTable = @"
+            CREATE TABLE IF NOT EXISTS decks (
+                user_id VARCHAR(255) NOT NULL,
+                card_id VARCHAR(255) NOT NULL,
+                PRIMARY KEY (user_id, card_id),
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (card_id) REFERENCES cards(id) ON DELETE CASCADE
+            )";
 
             var createAdminUser = @"INSERT INTO users (id, username, password, coins, elo) 
                         VALUES ('1', 'admin', 'admin', 10000, 0)";
@@ -79,6 +87,9 @@ namespace MTCG.Infrastructure
                 command.ExecuteNonQuery();
             }
             using (var command = new NpgsqlCommand(createAdminUser, connection))
+            {
+                command.ExecuteNonQuery();
+            }using (var command = new NpgsqlCommand(createDecksTable, connection))
             {
                 command.ExecuteNonQuery();
             }

@@ -9,7 +9,7 @@ namespace MTCG.Models
 {
     public class Card
     {
-        public Guid Id;
+        public string Id { get; }
         public string Name { get; set; }
         public float Damage { get; set; }
         public string Type { get; set; }
@@ -20,7 +20,7 @@ namespace MTCG.Models
             Name = cardName;
             Damage = cardDamage;
             Type = cardType;
-            Id = new();
+            Id = Guid.NewGuid().ToString();
         }
 
         public Card(CardDTO cardDto)
@@ -39,7 +39,7 @@ namespace MTCG.Models
                 this.Type = "Regular";
             }
             this.Damage = cardDto.Damage;
-            this.Id = new Guid(cardDto.Id);
+            this.Id = cardDto.Id;
         }
 
         private static readonly Random random = new();

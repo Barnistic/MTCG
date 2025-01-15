@@ -9,7 +9,7 @@ namespace MTCG.Models
 {
     public class User
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Id { get; }
         public string Username { get; set; }
         public string Password { get; set; }
         public int ELO { get; set; } = 100;
@@ -23,16 +23,15 @@ namespace MTCG.Models
         {
             Username = username;
             Password = password;
+            Id = Guid.NewGuid().ToString();
         }
 
         public User() { }
 
         public User(UserDTO userDto)
         {
-            if(Guid.TryParse(userDto.id, out Guid parsedId))
-            {
-                this.Id = parsedId;
-            }
+
+            this.Id = userDto.id;
             this.Username = userDto.name;
             this.Password = userDto.password;
             this.ELO = userDto.elo;

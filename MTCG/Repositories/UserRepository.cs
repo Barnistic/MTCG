@@ -44,6 +44,8 @@ namespace MTCG.Repositories
                         elo = Convert.ToInt32(reader["elo"])
                     };
 
+                    Console.WriteLine($"Retrieved User: {userDto.id}, {userDto.name}, {userDto.password}, {userDto.coins}, {userDto.elo}");
+
                     return new User(userDto);
                 }
 
@@ -55,6 +57,7 @@ namespace MTCG.Repositories
                 return null;
             }
         }
+
 
         public List<User> GetAllUsers()
         {
@@ -103,7 +106,7 @@ namespace MTCG.Repositories
                 using var command = new NpgsqlCommand(@"
                         INSERT INTO users (id, username, password, coins, elo) 
                         VALUES (@Id, @Username, @Password, @Coins, @Elo)", connection);
-                command.Parameters.AddWithValue("@Id", user.Id.ToString());
+                command.Parameters.AddWithValue("@Id", user.Id);
                 command.Parameters.AddWithValue("@Username", user.Username);
                 command.Parameters.AddWithValue("@Password", user.Password);
                 command.Parameters.AddWithValue("@Coins", user.Coins);

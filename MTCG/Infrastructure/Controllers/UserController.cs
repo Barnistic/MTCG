@@ -19,27 +19,30 @@ namespace MTCG.Infrastructure
                 Console.WriteLine("\nHandleUserPost");
                 string body = string.Join("\r\n", requestLines).Split("\r\n\r\n")[1];
                 var user = JsonSerializer.Deserialize<User>(body);
+
+                User newUser = new(user.Username, user.Password);
+
                 if (user == null)
                 {
                     Console.WriteLine("Deserialized user is null");
                     SendResponse(stream, "400 Bad Request", "Invalid JSON payload");
                     return;
                 }
-                Console.WriteLine($"Deserialized User: Username={user.Username}, Password={user.Password}");
-                if (string.IsNullOrEmpty(user?.Username) || string.IsNullOrEmpty(user?.Password))
+                Console.WriteLine($"Deserialized User: Username={newUser.Username}, Password={newUser.Password}");
+                if (string.IsNullOrEmpty(newUser?.Username) || string.IsNullOrEmpty(newUser?.Password))
                 {
                     SendResponse(stream, "400 Bad Request", "Invalid request payload");
                     return;
                 }
-                if (_users.ContainsKey(user.Username))
+                if (_users.ContainsKey(newUser.Username))
                 {
                     SendResponse(stream, "409 Conflict", "User with same username already registered");
                     return;
                 }
-                _users.Add(user.Username, user);
-                string token = "Bearer " + user.Username + "-mtcgToken";
-                _sessions.Add(token, user.Username);
-                _userRepository.AddUser(user);
+                _users.Add(newUser.Username, newUser);
+                string token = "Bearer " + newUser.Username + "-mtcgToken";
+                _sessions.Add(token, newUser.Username);
+                _userRepository.AddUser(newUser);
                 SendResponse(stream, "201 Created", "{ \"token\": \"" + token + "\" }");
             }
             catch (Exception)
@@ -56,8 +59,8 @@ namespace MTCG.Infrastructure
                 var user = _users[username];
                 if (requester.Username == "admin" || requester.Username == username)
                 {
-                    var response = _userRepository.GetUser(username);
-                    string userJson = JsonSerializer.Serialize(response);
+                    var userResponse = _userRepository.GetUser(username);
+                    string userJson = JsonSerializer.Serialize(userResponse);
                     SendResponse(stream, "200 OK", userJson);
                 }
                 else
@@ -88,7 +91,7 @@ namespace MTCG.Infrastructure
                             SendResponse(stream, "400 Bad Request", "Invalid request payload");
                             return;
                         }
-                        updatedUser.UserId = requester.Id.ToString();
+                        updatedUser.UserId = requester.Id;
                         _userRepository.UpdateProfile(updatedUser);
                         SendResponse(stream, "200 OK", "User successfully updated");
                     }

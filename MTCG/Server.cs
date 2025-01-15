@@ -19,14 +19,11 @@ namespace MTCG
         private readonly Dictionary<string, User> _users; // Dictionary to store User objects
         private readonly RequestHandler _requestHandler;
 
-        IUserRepository _userRepository;
-
-        public Server(int port, IUserRepository userRepository)
+        public Server(int port, IUserRepository userRepository, ICardRepository cardRepository)
         {
             _port = port;
             _users = new Dictionary<string, User>(); // Initialize the dictionary with User objects
-            _requestHandler = new RequestHandler(_users, userRepository);
-            _userRepository = userRepository;
+            _requestHandler = new RequestHandler(_users, userRepository, cardRepository);
         }
 
         public void Start()
@@ -38,7 +35,7 @@ namespace MTCG
             while (true)
             {
                 TcpClient client = listener.AcceptTcpClient();
-                Console.WriteLine("\n\nClient connected!");
+                //Console.WriteLine("\n\nClient connected!");
 
                 // Handle each client connection in a separate thread
                 ThreadPool.QueueUserWorkItem(HandleClient, client);
