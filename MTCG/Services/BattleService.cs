@@ -42,7 +42,7 @@ namespace MTCG.Services
                 double DamageP2;
 
                 //Pure monster fights
-                if (player1Card is MonsterCard && player2Card is MonsterCard)
+                if (player1Card.Type == "Monster" && player2Card.Type == "Monster")
                 {
                     DamageP1 = player1Card.Damage;
                     DamageP2 = player2Card.Damage;
@@ -52,8 +52,6 @@ namespace MTCG.Services
                     DamageP1 = CalculateDamage(player1.Deck[randomP1], player2.Deck[randomP2]);
                     DamageP2 = CalculateDamage(player2.Deck[randomP2], player1.Deck[randomP1]);
                 }
-
-                //Need to implement specific cards here: Goblin, Dragon, Wizard, Ork, Knight, Kraken, FireElf
 
                 battleLog.AppendLine($"Round {CurrentRound}:");
                 battleLog.AppendLine($"{player1.Username}: {player1Card.Name}");

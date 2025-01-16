@@ -56,7 +56,7 @@ namespace MTCG
                     string request = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
                     Console.WriteLine("\nRequest received");
-                    //Console.WriteLine(request);
+                    Console.WriteLine(request);
 
                     // Parse the HTTP request
                     var lines = request.Split("\r\n");

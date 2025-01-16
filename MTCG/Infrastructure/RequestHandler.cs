@@ -53,9 +53,32 @@ namespace MTCG.Infrastructure
         {
             try
             {
-                string body = string.Join("\r\n", requestLines).Split("\r\n\r\n")[1];
+                if (requestLines.Length < 1)
+                {
+                    SendResponse(stream, "400 Bad Request", "Invalid request");
+                    return;
+                }
+
                 string method = requestLines[0].Split(' ')[0];
                 string endpoint = requestLines[0].Split(' ')[1];
+                string body = string.Empty;
+                string token = null;
+
+                // Parse headers
+                for (int i = 1; i < requestLines.Length; i++)
+                {
+                    if (string.IsNullOrWhiteSpace(requestLines[i]))
+                    {
+                        // Body starts after the empty line
+                        body = string.Join("\r\n", requestLines.Skip(i + 1));
+                        break;
+                    }
+
+                    if (requestLines[i].StartsWith("Authorization:"))
+                    {
+                        token = requestLines[i].Substring("Authorization:".Length).Trim();
+                    }
+                }
 
                 Console.WriteLine($"Method: {method}, Endpoint: {endpoint}");
                 //Console.WriteLine("Body:");
@@ -74,8 +97,6 @@ namespace MTCG.Infrastructure
                 }
 
                 // Validate token for other endpoints
-                string token = requestLines[1].Split(' ')[1] + " " + requestLines[1].Split(' ')[2];
-                //Console.WriteLine(token);
                 var requester = ValidateToken(token);
                 if (requester == null)
                 {
@@ -206,6 +227,10 @@ namespace MTCG.Infrastructure
 
         private void SendResponse(NetworkStream stream, string status, string body)
         {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (status == null) throw new ArgumentNullException(nameof(status));
+            if (body == null) throw new ArgumentNullException(nameof(body));
+
             string response = $"HTTP/1.1 {status}\r\n" +
                               "Content-Type: text/plain\r\n" +
                               $"Content-Length: {body.Length}\r\n" +

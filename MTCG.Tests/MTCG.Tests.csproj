@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="RequestTests\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MTCG\MTCG.csproj" />
   </ItemGroup>
 

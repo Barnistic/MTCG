@@ -12,7 +12,7 @@ namespace MTCG.Infrastructure
 {
     public partial class RequestHandler
     {
-        private void HandlePackagePost(User requester, string[] requestLines, NetworkStream stream)
+        public void HandlePackagePost(User requester, string[] requestLines, NetworkStream stream)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace MTCG.Infrastructure
             }
         }
 
-        private void HandleTransactionPost(User requester, NetworkStream stream)
+        public void HandleTransactionPost(User requester, NetworkStream stream)
         {
             try
             {

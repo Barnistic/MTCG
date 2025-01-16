@@ -11,7 +11,7 @@ namespace MTCG.Infrastructure
 {
     public partial class RequestHandler
     {
-        private void HandleCardsGet(User requester, NetworkStream stream)
+        public void HandleCardsGet(User requester, NetworkStream stream)
         {
             Console.WriteLine("\nHandleCardsGet");
             if (requester.Stack.Any())
@@ -25,7 +25,7 @@ namespace MTCG.Infrastructure
             }
         }
 
-        private void HandleDeckGet(User requester, string[] requestLines, NetworkStream stream)
+        public void HandleDeckGet(User requester, string[] requestLines, NetworkStream stream)
         {
             Console.WriteLine("\nHandleDeckGet");
             string format = "json";
@@ -53,7 +53,7 @@ namespace MTCG.Infrastructure
             }
         }
 
-        private void HandleDeckPut(User requester, string[] requestLines, NetworkStream stream)
+        public void HandleDeckPut(User requester, string[] requestLines, NetworkStream stream)
         {
             try
             {

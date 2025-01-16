@@ -12,7 +12,7 @@ namespace MTCG.Infrastructure
 {
     public partial class RequestHandler
     {
-        private void HandleUserPost(string[] requestLines, NetworkStream stream)
+        public void HandleUserPost(string[] requestLines, NetworkStream stream)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace MTCG.Infrastructure
             }
         }
 
-        private void HandleUserGet(string username, User requester, NetworkStream stream)
+        public void HandleUserGet(string username, User requester, NetworkStream stream)
         {
             Console.WriteLine("\nHandleUserGet");
             if (_users.ContainsKey(username))
@@ -84,7 +84,7 @@ namespace MTCG.Infrastructure
             }
         }
 
-        private void HandleUserPut(string username, User requester, string[] requestLines, NetworkStream stream)
+        public void HandleUserPut(string username, User requester, string[] requestLines, NetworkStream stream)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace MTCG.Infrastructure
             }
         }
 
-        private void HandleSessionPost(string[] requestLines, NetworkStream stream)
+        public void HandleSessionPost(string[] requestLines, NetworkStream stream)
         {
             string body = string.Join("\r\n", requestLines).Split("\r\n\r\n")[1];
             //Console.WriteLine("Request body:");

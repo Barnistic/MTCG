@@ -12,7 +12,7 @@ namespace MTCG.Infrastructure
 {
     public partial class RequestHandler
     {
-        private void HandleStatsGet(User requester, NetworkStream stream)
+        public void HandleStatsGet(User requester, NetworkStream stream)
         {
             Console.WriteLine("\nHandleStatsGet");
             StatDTO statDto = _gameRepository.GetStat(requester.Id);
@@ -27,7 +27,7 @@ namespace MTCG.Infrastructure
             }
         }
 
-        private void HandleScoreboardGet(NetworkStream stream)
+        public void HandleScoreboardGet(NetworkStream stream)
         {
             Console.WriteLine("\nHandleScoreboardGet");
             var scoreboard = _gameRepository.GetScoreBoard();
@@ -36,7 +36,7 @@ namespace MTCG.Infrastructure
         }
 
 
-        private void HandleBattlePost(User requester, NetworkStream stream)
+        public void HandleBattlePost(User requester, NetworkStream stream)
         {
             Console.WriteLine("\nHandleBattlePost");
             lock (_battleLobby)

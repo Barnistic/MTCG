@@ -12,7 +12,7 @@ namespace MTCG.Infrastructure
 {
     public partial class RequestHandler
     {
-        private void HandleTradingsGet(NetworkStream stream)
+        public void HandleTradingsGet(NetworkStream stream)
         {
             Console.WriteLine("\nHandleTradingsGet");
             if (_tradingDeals.Any())
@@ -27,7 +27,7 @@ namespace MTCG.Infrastructure
             }
         }
 
-        private void HandleTradingPost(User requester, string[] requestLines, NetworkStream stream)
+        public void HandleTradingPost(User requester, string[] requestLines, NetworkStream stream)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace MTCG.Infrastructure
             }
         }
 
-        private void HandleTradingDelete(string tradingDealId, User requester, NetworkStream stream)
+        public void HandleTradingDelete(string tradingDealId, User requester, NetworkStream stream)
         {
             Console.WriteLine("\nHandleTradingDelete");
             var deal = _tradingDeals.FirstOrDefault(d => d.Id == tradingDealId);
@@ -79,7 +79,7 @@ namespace MTCG.Infrastructure
             SendResponse(stream, "200 OK", "Trading deal successfully deleted");
         }
 
-        private void HandleTradingDealPost(string tradingDealId, User requester, string[] requestLines, NetworkStream stream)
+        public void HandleTradingDealPost(string tradingDealId, User requester, string[] requestLines, NetworkStream stream)
         {
             try
             {
