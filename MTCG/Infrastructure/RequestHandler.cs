@@ -81,7 +81,6 @@ namespace MTCG.Infrastructure
                 }
 
                 Console.WriteLine($"Method: {method}, Endpoint: {endpoint}");
-                //Console.WriteLine("Body:");
                 //Console.WriteLine(body);
 
                 // Skip token validation for login and registration
@@ -216,7 +215,6 @@ namespace MTCG.Infrastructure
             if (_sessions.ContainsKey(token))
             {
                 string username = _sessions[token];
-                //Console.WriteLine("Token username: " + username);
                 if (_users.ContainsKey(username))
                 {
                     return _users[username];

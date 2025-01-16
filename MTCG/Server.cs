@@ -35,7 +35,6 @@ namespace MTCG
             while (true)
             {
                 TcpClient client = listener.AcceptTcpClient();
-                //Console.WriteLine("\n\nClient connected!");
 
                 // Handle each client connection in a separate thread
                 ThreadPool.QueueUserWorkItem(HandleClient, client);
