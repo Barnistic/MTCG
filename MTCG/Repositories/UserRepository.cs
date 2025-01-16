@@ -71,41 +71,6 @@ namespace MTCG.Repositories
             }
         }
 
-        public List<User> GetAllUsers()
-        {
-            try
-            {
-                using var connection = new NpgsqlConnection(_connectionString);
-                connection.Open();
-
-                using var command = new NpgsqlCommand(@"
-                            SELECT id, username, password, coins 
-                            FROM users", connection);
-
-                using var reader = command.ExecuteReader();
-                var users = new List<User>();
-                while (reader.Read())
-                {
-                    var userDto = new UserDTO
-                    {
-                        Id = reader["id"].ToString(),
-                        Name = reader["username"].ToString(),
-                        Password = reader["password"].ToString(),
-                        Coins = Convert.ToInt32(reader["coins"])
-                    };
-
-                    users.Add(new User(userDto));
-                }
-
-                return users;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Error in GetAllUsers: {e.Message}");
-                return null;
-            }
-        }
-
         public void AddUser(User user)
         {
             try

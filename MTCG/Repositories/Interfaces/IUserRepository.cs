@@ -10,7 +10,6 @@ namespace MTCG.Repositories.Interfaces
     public interface IUserRepository
     {
         User GetUser(string username);
-        List<User> GetAllUsers();
         void AddUser(User user);
         void UpdateProfile(UserProfile userProfile);
     }

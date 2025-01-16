@@ -158,6 +158,8 @@ namespace MTCG.Repositories
                         reader["element_type"].ToString()
                     );
 
+                    card.Id = reader["id"].ToString();
+
                     Console.WriteLine($"Retrieved card: {card.Name} with ID: {card.Id}");
                     return card;
                 }
